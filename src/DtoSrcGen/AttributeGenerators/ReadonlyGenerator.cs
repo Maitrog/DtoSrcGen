@@ -12,6 +12,12 @@ namespace DtoSrcGen
 
         public string AttributeNameWithNamespace => "DtoSrcGen.ReadonlyAttribute";
 
+        public bool GetGenerateDefaultCtor(INamedTypeSymbol symbol)
+        {
+            var attributeData = symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
+            return GeneratorUtils.GetGenerateDefaultCtor(attributeData);
+        }
+
         private IReadOnlyList<ISymbol> Members { get; set; }
 
         public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)

@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace DtoSrcGen
@@ -23,6 +24,18 @@ namespace DtoSrcGen
                        Accessibility.ProtectedOrInternal => "protected internal",
                        _ => symbol.ContainingType is null ? "internal" : "private",
                    };
+        }
+
+        public static bool GetGenerateDefaultCtor(AttributeData attributeData)
+        {
+            if (attributeData is null)
+                return true;
+
+            var namedArgument = attributeData.NamedArguments.FirstOrDefault(x => x.Key == "GenerateDefaultCtor");
+            if (namedArgument.Key == "GenerateDefaultCtor" && namedArgument.Value.Value is bool generateDefaultCtor)
+                return generateDefaultCtor;
+
+            return true;
         }
     }
 }

@@ -11,6 +11,12 @@ namespace DtoSrcGen
 
         public string AttributeNameWithNamespace => "DtoSrcGen.PickAttribute";
 
+        public bool GetGenerateDefaultCtor(INamedTypeSymbol symbol)
+        {
+            var attributeData = symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
+            return GeneratorUtils.GetGenerateDefaultCtor(attributeData);
+        }
+
         public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
         {
             // do nothing

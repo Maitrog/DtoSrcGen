@@ -10,6 +10,8 @@ namespace DtoSrcGen
             Types = types;
         }
         
+        public bool GenerateDefaultCtor { get; set; } = true;
+
         public Type[] Types { get; private set; }
     }
 }

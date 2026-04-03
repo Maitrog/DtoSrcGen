@@ -11,5 +11,7 @@ namespace DtoSrcGen
         }
 
         public Type SourceType { get; private set; }
+
+        public bool GenerateDefaultCtor { get; set; } = true;
     }
 }

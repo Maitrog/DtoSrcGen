@@ -12,6 +12,12 @@ namespace DtoSrcGen
 
         public string AttributeNameWithNamespace => "DtoSrcGen.UnionAttribute";
 
+        public bool GetGenerateDefaultCtor(INamedTypeSymbol symbol)
+        {
+            var attributeData = symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
+            return GeneratorUtils.GetGenerateDefaultCtor(attributeData);
+        }
+
         private readonly Dictionary<string, int> _types = new();
         private readonly Dictionary<string, PropertyInfo> _properties = new();
 

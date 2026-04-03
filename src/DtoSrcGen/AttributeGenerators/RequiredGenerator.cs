@@ -12,6 +12,12 @@ namespace DtoSrcGen
 
         public string AttributeNameWithNamespace => "DtoSrcGen.RequiredAttribute";
 
+        public bool GetGenerateDefaultCtor(INamedTypeSymbol symbol)
+        {
+            var attributeData = symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
+            return GeneratorUtils.GetGenerateDefaultCtor(attributeData);
+        }
+
         private bool _languageIsSupported = true;
 
         public IReadOnlyList<ISymbol> Members { get; set; }

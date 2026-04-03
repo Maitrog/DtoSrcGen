@@ -82,7 +82,10 @@ namespace DtoSrcGen
             }
 
             // append constructors
-            AppendDefaultConstructor(sb, typeSymbol, indent);
+            if (attributeGenerator.GetGenerateDefaultCtor(typeSymbol))
+            {
+                AppendDefaultConstructor(sb, typeSymbol, indent);
+            }
             attributeGenerator.AppendConstructors(context, sb, typeSymbol, indent);
 
             // append properties
@@ -90,7 +93,7 @@ namespace DtoSrcGen
             
             AppendEndBrackets(indent, sb);
 
-            var hintName = MakeHintName(typeSymbol);
+            var hintName = MakeHintName(typeSymbol, attributeGenerator.AttributeName);
             return (hintName, SourceText.From(sb.ToString(), Encoding.UTF8));
         }
 
@@ -162,7 +165,7 @@ namespace DtoSrcGen
             return "<" + string.Join(", ", symbol.TypeParameters.Select(tp => tp.Name)) + ">";
         }
 
-        private static string MakeHintName(INamedTypeSymbol symbol)
+        private static string MakeHintName(INamedTypeSymbol symbol, string attributeName)
         {
             var fullName = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
             var sb = new StringBuilder(fullName.Length);
@@ -175,6 +178,8 @@ namespace DtoSrcGen
                     sb.Append('_');
             }
 
+            sb.Append(".");
+            sb.Append(attributeName);
             sb.Append(".Fields.g.cs");
             return sb.ToString();
         }

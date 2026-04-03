@@ -12,6 +12,8 @@ namespace DtoSrcGen
         }
 
         public Type Type { get; private set; }
+
+        public bool GenerateDefaultCtor { get; set; } = true;
         
         public string[] Properties { get; private set; }
     }

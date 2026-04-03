@@ -9,6 +9,8 @@ namespace DtoSrcGen
         public string AttributeName { get; }
         
         public string AttributeNameWithNamespace { get; }
+
+        bool GetGenerateDefaultCtor(INamedTypeSymbol symbol);
         
         void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol);
 
