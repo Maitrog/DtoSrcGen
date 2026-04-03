@@ -7,6 +7,7 @@ Source generator that builds DTO partial classes from existing models using attr
 ## What it does
 - Generates constructors and properties for partial classes annotated with attributes from `DtoSrcGen.Models`.
 - Supports `Pick`, `Omit`, `Readonly`, `Required`, and `Union` patterns to shape DTOs without hand-written boilerplate.
+- Supports `GenerateDefaultCtor` option on all attributes to control whether an empty DTO constructor is generated.
 - Emits diagnostics when members are missing/duplicated and when language features (e.g., `required`) are unavailable.
 
 ## Getting started
@@ -38,6 +39,21 @@ public partial class RequiredUser { }
 
 [Union(typeof(User), typeof(Chat))]
 public partial class UserChat { }
+
+// Optional: disable generated empty ctor
+[Pick(typeof(User), nameof(User.Id), nameof(User.Name), GenerateDefaultCtor = false)]
+public partial class UserSummaryNoDefaultCtor { }
+
+// using multiple attributes (GenerateDefaultCtor = false is required for all except one)
+[Readonly(typeof(User))] 
+[Omit(typeof(Chat), nameof(Chat.Id), GenerateDefaultCtor = false)]
+public partial class ReadonlyUserWithChat { }
+```
+
+3) Use generated DTOs:
+```csharp
+var summary = new UserSummaryNoDefaultCtor(user);
+// var summary2 = new UserSummaryNoDefaultCtor(); // no parameterless ctor when GenerateDefaultCtor = false
 ```
 
 ## Attribute behavior
@@ -46,6 +62,9 @@ public partial class UserChat { }
 - **Readonly**: include all eligible members with getters only.
 - **Required**: include all public members and mark them `required`; emits an error if language version < C# 11.
 - **Union**: merges members from multiple types; warns on duplicate names with same type, errors when types differ.
+
+Common option (`GenerateDefaultCtor`) available on every attribute. Default is `true`. Set `GenerateDefaultCtor = false` to skip generating `public DtoName() { }`.
+
 Eligible members are public/internal/protected-internal fields or properties that are non-static and not compiler-generated.
 
 ## Sample project
