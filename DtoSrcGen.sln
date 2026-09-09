@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoSrcGen.Models", "src\Dto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoSrcGenSample", "samples\DtoSrcGenSample\DtoSrcGenSample.csproj", "{A0C0254D-7AFE-46C2-9F15-86A74EFC53C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoSrcGen.Tests", "tests\DtoSrcGen.Tests\DtoSrcGen.Tests.csproj", "{DE4E3F1B-C99D-476B-BE7C-3EAB9F8E795B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{A0C0254D-7AFE-46C2-9F15-86A74EFC53C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0C0254D-7AFE-46C2-9F15-86A74EFC53C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0C0254D-7AFE-46C2-9F15-86A74EFC53C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE4E3F1B-C99D-476B-BE7C-3EAB9F8E795B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE4E3F1B-C99D-476B-BE7C-3EAB9F8E795B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE4E3F1B-C99D-476B-BE7C-3EAB9F8E795B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE4E3F1B-C99D-476B-BE7C-3EAB9F8E795B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
