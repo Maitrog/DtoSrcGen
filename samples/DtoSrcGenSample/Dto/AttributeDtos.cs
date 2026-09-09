@@ -3,7 +3,7 @@ using DtoSrcGenSample.Entities;
 
 namespace DtoSrcGenSample.Dto;
 
-[Pick(typeof(User), nameof(User.Id), nameof(User.Name), nameof(User.Email))]
+[Pick(typeof(User), "Id as UserId", nameof(User.Name), nameof(User.Email))]
 public partial class UserPickDto
 {
 }

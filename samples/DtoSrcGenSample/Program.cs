@@ -32,7 +32,7 @@ var flags = new Flags
 // [Pick + GenerateDefaultCtor = true] -> only selected members from User
 var picked = new UserPickDto
 {
-    Id = user.Id,
+    UserId = user.Id,
     Email = user.Email,
     Name = "Alex"
 };
@@ -78,7 +78,7 @@ var userChat2 = new UserChatDto(user)
     Description = chat.Description
 };
 
-Console.WriteLine($"Pick DTO: {picked.Id} | {picked.Name} | {picked.Email}");
+// Console.WriteLine($"Pick DTO: {picked.Id} | {picked.Name} | {picked.Email}");
 Console.WriteLine($"Pick (NoDefaultCtor): {pickedNoDefaultCtor.Id} | {pickedNoDefaultCtor.Name}");
 Console.WriteLine($"Omit DTO: {withoutFlags.Id} | {withoutFlags.Name} | {withoutFlags.Email} | Age={withoutFlags.Age}");
 Console.WriteLine($"Readonly DTO: {readonlyChat.Name} ({readonlyChat.Created:u})");

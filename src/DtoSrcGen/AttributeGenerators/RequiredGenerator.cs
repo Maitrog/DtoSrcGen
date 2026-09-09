@@ -1,56 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace DtoSrcGen
 {
-    public class RequiredGenerator : IAttributeGenerator
+    internal class RequiredGenerator : GeneratorBase
     {
-        public string AttributeName => "RequiredAttribute";
+        public override string AttributeName => "RequiredAttribute";
 
-        public string AttributeNameWithNamespace => "DtoSrcGen.RequiredAttribute";
+        protected override LanguageVersion MinLanguageVersion => LanguageVersion.CSharp11;
 
-        public bool GetGenerateDefaultCtor(INamedTypeSymbol symbol)
+        protected override IReadOnlyList<SymbolWithAlias> GetMembers(SourceProductionContext context, INamedTypeSymbol symbol)
         {
-            var attributeData = symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-            return GeneratorUtils.GetGenerateDefaultCtor(attributeData);
-        }
-
-        private bool _languageIsSupported = true;
-
-        public IReadOnlyList<ISymbol> Members { get; set; }
-
-        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
-        {
-            if (currentLanguageVersion <  LanguageVersion.CSharp11)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "DSG3002",
-                        "Not supported",
-                        "\'RequiredAttribute\' is supported from C# 11.",
-                        "DtoSrcGen",
-                        DiagnosticSeverity.Error,
-                        isEnabledByDefault: true),
-                    symbol.Locations.First()));
-                _languageIsSupported = false;
-                return;
-            }
-            
-            var attributes = symbol.GetAttributes();
-            
-            var attributeData = attributes.FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-            
-            var type = attributeData.ConstructorArguments[0].Value as INamedTypeSymbol;
-            
-            var members = type.GetMembers();
-            Members = members.Where(x
-                => x.Kind is SymbolKind.Property or SymbolKind.Field
-                   && x.DeclaredAccessibility is Accessibility.Public
-                   && !x.IsStatic
-                   && !x.IsImplicitlyDeclared).ToList();
+            var members = TargetType.GetMembers();
 
             if (members.Any(x => x.Kind is SymbolKind.Property or SymbolKind.Field
                                  && x.DeclaredAccessibility is Accessibility.Internal or Accessibility.ProtectedOrInternal
@@ -66,59 +29,21 @@ namespace DtoSrcGen
                         DiagnosticSeverity.Warning,
                         isEnabledByDefault: true),
                     symbol.Locations.First(),
-                    type.Name));
+                    TargetType.Name));
             }
+            
+            return members.Where(x
+                => x.Kind is SymbolKind.Property or SymbolKind.Field
+                   && x.DeclaredAccessibility is Accessibility.Public
+                   && !x.IsStatic
+                   && !x.IsImplicitlyDeclared)
+                          .Select(x => new SymbolWithAlias { Symbol = x, Alias = x.Name })
+                          .ToList();
         }
 
-
-        public void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
+        protected override string GetFormatedPropertyLine(int indent, string accessibility, string memberType, string memberName)
         {
-            if (!_languageIsSupported)
-                return;
-            
-            var ctorSb = new StringBuilder();
-            ctorSb.Append($"{GeneratorUtils.Indent(indent)}public {symbol.Name}");
-
-            var attributes = symbol.GetAttributes();
-
-            var attributeData = attributes.FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-
-            var type = attributeData.ConstructorArguments[0].Value as INamedTypeSymbol;
-
-            var ns = type.ContainingNamespace;
-            var nsName = ns.IsGlobalNamespace ? "" : $"{ns.ToDisplayString()}.";
-            ctorSb.AppendLine($"({nsName}{type.Name} value)");
-            ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}{{");
-            indent++;
-
-            foreach (var member in Members)
-            {
-                ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}{member.Name} = value.{member.Name};");
-            }
-
-            indent--;
-            ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}}}");
-
-            sb.AppendLine(ctorSb.ToString());
-        }
-
-        public void AppendProperties(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
-        {
-            if (!_languageIsSupported)
-                return;
-            
-            foreach (var member in Members)
-            {
-                var accessibility = GeneratorUtils.AccessibilityToString(member);
-            
-                var memberType = member.Kind switch
-                                 {
-                                     SymbolKind.Property => (member as IPropertySymbol)?.Type.ToDisplayString(),
-                                     SymbolKind.Field => (member as IFieldSymbol)?.Type.ToDisplayString(),
-                                 };
-            
-                sb.AppendLine($"{GeneratorUtils.Indent(indent)}{accessibility} required {memberType} {member.Name} {{ get; set; }}");
-            }
+            return $"{GeneratorUtils.Indent(indent)}{accessibility} required {memberType} {memberName} {{ get; set; }}";
         }
     }
 }

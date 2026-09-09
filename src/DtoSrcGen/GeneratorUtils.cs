@@ -37,5 +37,15 @@ namespace DtoSrcGen
 
             return true;
         }
+        
+        public static string GetMemberType(ISymbol member)
+        {
+            var memberType = member.Kind switch
+                             {
+                                 SymbolKind.Property => (member as IPropertySymbol)?.Type.ToDisplayString(),
+                                 SymbolKind.Field => (member as IFieldSymbol)?.Type.ToDisplayString(),
+                             };
+            return memberType;
+        }
     }
 }

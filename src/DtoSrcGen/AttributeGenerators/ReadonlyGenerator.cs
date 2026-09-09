@@ -1,84 +1,29 @@
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace DtoSrcGen
 {
-    internal class ReadonlyGenerator : IAttributeGenerator
+    internal class ReadonlyGenerator : GeneratorBase
     {
-        public string AttributeName => "ReadonlyAttribute";
+        public override string AttributeName => "ReadonlyAttribute";
 
-        public string AttributeNameWithNamespace => "DtoSrcGen.ReadonlyAttribute";
-
-        public bool GetGenerateDefaultCtor(INamedTypeSymbol symbol)
+        protected override IReadOnlyList<SymbolWithAlias> GetMembers(SourceProductionContext context, INamedTypeSymbol symbol)
         {
-            var attributeData = symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-            return GeneratorUtils.GetGenerateDefaultCtor(attributeData);
-        }
+            var members = TargetType.GetMembers();
 
-        private IReadOnlyList<ISymbol> Members { get; set; }
-
-        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
-        {
-            var attributes = symbol.GetAttributes();
-            
-            var attributeData = attributes.FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-            
-            var type = attributeData.ConstructorArguments[0].Value as INamedTypeSymbol;
-            
-            var members = type.GetMembers();
-            Members = members.Where(x
+            return members.Where(x
                 => x.Kind is SymbolKind.Property or SymbolKind.Field
                    && x.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal or Accessibility.ProtectedOrInternal
                    && !x.IsStatic
-                   && !x.IsImplicitlyDeclared).ToList();
+                   && !x.IsImplicitlyDeclared)
+                          .Select(x => new SymbolWithAlias { Symbol = x, Alias = x.Name })
+                          .ToList();
         }
 
-
-        public void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
+        protected override string GetFormatedPropertyLine(int indent, string accessibility, string memberType, string memberName)
         {
-            var ctorSb = new StringBuilder();
-            ctorSb.Append($"{GeneratorUtils.Indent(indent)}public {symbol.Name}");
-
-            var attributes = symbol.GetAttributes();
-
-            var attributeData = attributes.FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-
-            var type = attributeData.ConstructorArguments[0].Value as INamedTypeSymbol;
-
-            var ns = type.ContainingNamespace;
-            var nsName = ns.IsGlobalNamespace ? "" : $"{ns.ToDisplayString()}.";
-            ctorSb.AppendLine($"({nsName}{type.Name} value)");
-            ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}{{");
-            indent++;
-
-            foreach (var member in Members)
-            {
-                ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}{member.Name} = value.{member.Name};");
-            }
-
-            indent--;
-            ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}}}");
-
-            sb.AppendLine(ctorSb.ToString());
-        }
-
-        public void AppendProperties(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
-        {
-            foreach (var member in Members)
-            {
-                var accessibility = GeneratorUtils.AccessibilityToString(member);
-            
-                var memberType = member.Kind switch
-                                 {
-                                     SymbolKind.Property => (member as IPropertySymbol)?.Type.ToDisplayString(),
-                                     SymbolKind.Field => (member as IFieldSymbol)?.Type.ToDisplayString(),
-                                 };
-            
-                sb.AppendLine($"{GeneratorUtils.Indent(indent)}{accessibility} {memberType} {member.Name} {{ get; }}");
-            }
+            return $"{GeneratorUtils.Indent(indent)}{accessibility} {memberType} {memberName} {{ get; }}";
         }
     }
 }
