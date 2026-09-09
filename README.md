@@ -31,6 +31,10 @@ public partial class DtoAge { }
 [Pick(typeof(User), nameof(User.Id), nameof(User.Name))]
 public partial class DtoName { }
 
+// Rename a member with `as`
+[Pick(typeof(User), $"{nameof(User.Id)} as UserId")]
+public partial class UserIdDto { }
+
 [Readonly(typeof(User))]
 public partial class ReadonlyUser { }
 
@@ -57,7 +61,7 @@ var summary = new UserSummaryNoDefaultCtor(user);
 ```
 
 ## Attribute behavior
-- **Pick**: include only the listed fields/properties from the source type; generated ctor copies those members.
+- **Pick**: include only the listed fields/properties from the source type; generated ctor copies those members. A member can be renamed with `"Member as NewName"` syntax (e.g., `Pick(typeof(User), "Id as UserId")`).
 - **Omit**: include all eligible members except the listed ones.
 - **Readonly**: include all eligible members with getters only.
 - **Required**: include all public members and mark them `required`; emits an error if language version < C# 11.
