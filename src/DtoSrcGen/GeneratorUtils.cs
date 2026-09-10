@@ -25,18 +25,6 @@ namespace DtoSrcGen
                        _ => symbol.ContainingType is null ? "internal" : "private",
                    };
         }
-
-        public static bool GetGenerateDefaultCtor(AttributeData attributeData)
-        {
-            if (attributeData is null)
-                return true;
-
-            var namedArgument = attributeData.NamedArguments.FirstOrDefault(x => x.Key == "GenerateDefaultCtor");
-            if (namedArgument.Key == "GenerateDefaultCtor" && namedArgument.Value.Value is bool generateDefaultCtor)
-                return generateDefaultCtor;
-
-            return true;
-        }
         
         public static string GetMemberType(ISymbol member)
         {

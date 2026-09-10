@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace DtoSrcGen
 {
-    internal class RequiredGenerator : GeneratorBase
+    internal class RequiredGenerator : SingleTypeGeneratorBase
     {
         public override string AttributeName => "RequiredAttribute";
 

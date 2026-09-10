@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace DtoSrcGen
 {
-    internal class OmitGenerator : GeneratorBase
+    internal class OmitGenerator : SingleTypeGeneratorBase
     {
         public override string AttributeName => "OmitAttribute";
 

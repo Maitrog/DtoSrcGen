@@ -6,14 +6,14 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace DtoSrcGen
 {
-    internal class UnionGenerator : GeneratorBase
+    internal class UnionGenerator : GeneratorBase, IAttributeGenerator
     {
         public override string AttributeName => "UnionAttribute";
 
         private readonly Dictionary<string, int> _types = new();
         private readonly Dictionary<string, PropertyInfo> _properties = new();
 
-        public override void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
+        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
         {
             var attributes = symbol.GetAttributes();
 
@@ -39,11 +39,7 @@ namespace DtoSrcGen
                                 && !x.IsStatic
                                 && !x.IsImplicitlyDeclared))
                 {
-                    var memberType = member.Kind switch
-                                     {
-                                         SymbolKind.Property => (member as IPropertySymbol)?.Type.ToDisplayString(),
-                                         SymbolKind.Field => (member as IFieldSymbol)?.Type.ToDisplayString(),
-                                     };
+                    var memberType = GeneratorUtils.GetMemberType(member);
 
                     var keyExists = _properties.ContainsKey(member.Name);
                     switch (keyExists)
@@ -85,7 +81,7 @@ namespace DtoSrcGen
             }
         }
 
-        public override void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
+        public void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
         {
             var ctorSb = new StringBuilder();
             ctorSb.Append($"{GeneratorUtils.Indent(indent)}public {symbol.Name}(");
@@ -111,14 +107,14 @@ namespace DtoSrcGen
             sb.AppendLine(ctorSb.ToString());
         }
 
-        public override void AppendProperties(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
+        public void AppendProperties(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
         {
             foreach (var property in _properties)
             {
                 var name = property.Key;
                 var accessibility = property.Value.Accessibility;
                 var memberType = property.Value.TypeName;
-                sb.AppendLine(GetFormatedPropertyLine(indent, accessibility, memberType, name));
+                sb.AppendLine($"{GeneratorUtils.Indent(indent)}{accessibility} {memberType} {name} {{ get; set; }}");
             }
         }
 

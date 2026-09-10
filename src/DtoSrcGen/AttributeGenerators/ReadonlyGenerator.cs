@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace DtoSrcGen
 {
-    internal class ReadonlyGenerator : GeneratorBase
+    internal class ReadonlyGenerator : SingleTypeGeneratorBase
     {
         public override string AttributeName => "ReadonlyAttribute";
 

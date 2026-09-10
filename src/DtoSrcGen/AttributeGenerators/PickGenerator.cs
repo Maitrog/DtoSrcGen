@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace DtoSrcGen
 {
-    internal class PickGenerator : GeneratorBase
+    internal class PickGenerator : SingleTypeGeneratorBase
     {
         public override string AttributeName => "PickAttribute";
 
