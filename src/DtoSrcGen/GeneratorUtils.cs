@@ -26,6 +26,48 @@ namespace DtoSrcGen
                    };
         }
         
+        public static Accessibility GetEffectiveAccessibility(ISymbol symbol)
+        {
+            var acc = symbol.DeclaredAccessibility;
+
+            for (var type = symbol.ContainingType; type is not null; type = type.ContainingType)
+            {
+                acc = Restrict(acc, type.DeclaredAccessibility);
+
+                if (acc == Accessibility.Private)
+                    break;
+            }
+
+            return acc;
+        }
+
+        private static Accessibility Restrict(Accessibility acc, Accessibility container)
+        {
+            return container switch
+                   {
+                       Accessibility.Internal => acc switch
+                       {
+                           Accessibility.Public or Accessibility.ProtectedOrInternal => Accessibility.Internal,
+                           Accessibility.Protected => Accessibility.ProtectedAndInternal,
+                           _ => acc,
+                       },
+                       Accessibility.Protected => acc switch
+                       {
+                           Accessibility.Public or Accessibility.ProtectedOrInternal => Accessibility.Protected,
+                           Accessibility.Internal => Accessibility.ProtectedAndInternal,
+                           _ => acc,
+                       },
+                       Accessibility.ProtectedOrInternal => acc is Accessibility.Public
+                           ? Accessibility.ProtectedOrInternal
+                           : acc,
+                       Accessibility.ProtectedAndInternal => acc is Accessibility.Private
+                           ? Accessibility.Private
+                           : Accessibility.ProtectedAndInternal,
+                       Accessibility.Private => Accessibility.Private,
+                       _ => acc,
+                   };
+        }
+
         public static string GetMemberType(ISymbol member)
         {
             var memberType = member.Kind switch

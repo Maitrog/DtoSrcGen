@@ -227,6 +227,38 @@ public class DtoGeneratorTests
     }
 
     [Fact]
+    public void Required_IncludesInternalMembersOfInternalClass()
+    {
+        var (result, generated) = Run("""
+            using Test.Entities;
+
+            namespace Test
+            {
+                [DtoSrcGen.Required(typeof(InternalUser))]
+                internal partial class RequiredInternalUserDto { }
+            }
+            """, """
+            namespace Test.Entities
+            {
+                internal class InternalUser
+                {
+                    public int Id { get; set; }
+                    internal string Secret { get; set; }
+                    protected internal string Token { get; set; }
+                    protected string Family { get; set; }
+                }
+            }
+            """);
+
+        var text = generated("RequiredAttribute");
+        Assert.Contains("public required int Id { get; set; }", text);
+        Assert.Contains("internal required string Secret { get; set; }", text);
+        Assert.Contains("protected internal required string Token { get; set; }", text);
+        Assert.DoesNotContain("Family", text);
+        Assert.False(HasDiagnostic(result, "DSG2001"));
+    }
+
+    [Fact]
     public void Union_MergesPropertiesFromAllTypes()
     {
         var (_, generated) = Run("""
