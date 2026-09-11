@@ -7,6 +7,8 @@ Source generator that builds DTO partial classes from existing models using attr
 ## What it does
 - Generates constructors and properties for partial classes annotated with attributes from `DtoSrcGen.Models`.
 - Supports `Pick`, `Omit`, `Readonly`, `Required`, and `Union` patterns to shape DTOs without hand-written boilerplate.
+- Supports stacking multiple attributes on a single DTO, including several attributes of the same type (e.g., two `[Pick]` attributes).
+- Supports nested DTO classes (a partial DTO declared inside another class).
 - Supports `GenerateDefaultCtor` option on all attributes to control whether an empty DTO constructor is generated.
 - Emits diagnostics when members are missing/duplicated and when language features (e.g., `required`) are unavailable.
 
@@ -48,10 +50,23 @@ public partial class UserChat { }
 [Pick(typeof(User), nameof(User.Id), nameof(User.Name), GenerateDefaultCtor = false)]
 public partial class UserSummaryNoDefaultCtor { }
 
-// using multiple attributes (GenerateDefaultCtor = false is required for all except one)
-[Readonly(typeof(User))] 
+// using multiple attributes of the same type (GenerateDefaultCtor = false is required for all except one)
+[Pick(typeof(User), nameof(User.Id), nameof(User.Name), GenerateDefaultCtor = false)]
+[Pick(typeof(Chat), nameof(Chat.Title))]
+public partial class UserWithChatTitle { }
+
+// mixing different attribute types works too
+[Readonly(typeof(User))]
 [Omit(typeof(Chat), nameof(Chat.Id), GenerateDefaultCtor = false)]
 public partial class ReadonlyUserWithChat { }
+
+// nested DTO classes are supported
+[Omit(typeof(User))]
+public partial class UserDto
+{
+    [Omit(typeof(User))]
+    public partial class NestedUserDto { }
+}
 ```
 
 3) Use generated DTOs:
@@ -64,7 +79,7 @@ var summary = new UserSummaryNoDefaultCtor(user);
 - **Pick**: include only the listed fields/properties from the source type; generated ctor copies those members. A member can be renamed with `"Member as NewName"` syntax (e.g., `Pick(typeof(User), "Id as UserId")`).
 - **Omit**: include all eligible members except the listed ones.
 - **Readonly**: include all eligible members with getters only.
-- **Required**: include all public members and mark them `required`; emits an error if language version < C# 11.
+- **Required**: includes public members and marks them `required`; internal/protected-internal members are included only when the source type itself is internal to the assembly (effective accessibility is checked, so nested types are handled correctly) — otherwise they are skipped with a warning. Emits an error if language version < C# 11.
 - **Union**: merges members from multiple types; warns on duplicate names with same type, errors when types differ.
 
 Common option (`GenerateDefaultCtor`) available on every attribute. Default is `true`. Set `GenerateDefaultCtor = false` to skip generating `public DtoName() { }`.
@@ -76,7 +91,7 @@ Eligible members are public/internal/protected-internal fields or properties tha
 
 ## Development notes
 - Keep your consumer project language version at least 9; C# 11 is needed for `RequiredAttribute`.
-- Diagnostics IDs: `DSG3000` (missing member), `DSG3001` (type mismatch in union), `DSG2000` (duplicate union member), `DSG2001` (internal members ignored), `DSG3002` (`Required` unsupported language version).
+- Diagnostics IDs: `DSG3000` (missing member), `DSG3001` (type mismatch in union), `DSG2000` (duplicate union member), `DSG2001` (internal members ignored by `Required` when the source type is visible outside the assembly), `DSG3002` (`Required` unsupported language version).
 
 ## Contributing
 - Open issues or PRs with reproducible scenarios. Add samples that cover new behaviors.
