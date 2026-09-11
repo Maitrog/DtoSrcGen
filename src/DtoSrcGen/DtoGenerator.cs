@@ -168,10 +168,11 @@ namespace DtoSrcGen
 
         private static void AppendEndBrackets(int indent, StringBuilder sb)
         {
-            indent--;
-            sb.AppendLine($"{GeneratorUtils.Indent(indent)}}}");
-            indent--;
-            sb.AppendLine($"{GeneratorUtils.Indent(indent)}}}");
+            while (indent > 0)
+            {
+                indent--;
+                sb.AppendLine($"{GeneratorUtils.Indent(indent)}}}");
+            }
         }
     }
 }
