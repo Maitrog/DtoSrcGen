@@ -2,7 +2,7 @@ using System;
 
 namespace DtoSrcGen
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class RequiredAttribute : Attribute
     {
         public RequiredAttribute(Type sourceType)
