@@ -2,7 +2,7 @@ using System;
 
 namespace DtoSrcGen
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class UnionAttribute : Attribute
     {
         public UnionAttribute(params Type[] types)

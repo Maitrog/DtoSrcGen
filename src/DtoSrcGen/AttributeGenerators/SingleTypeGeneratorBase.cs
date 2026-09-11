@@ -17,9 +17,8 @@ namespace DtoSrcGen
         
         protected INamedTypeSymbol TargetType { get; private set; }
 
-        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
+        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol, AttributeData attributeData)
         {
-            //Debugger.Launch();
             if (currentLanguageVersion <  MinLanguageVersion)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
@@ -35,18 +34,15 @@ namespace DtoSrcGen
                 return;
             }
 
-            var attributes = symbol.GetAttributes();
-            
-            AttributeData = attributes.FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
-            
+            AttributeData = attributeData;
+
             TargetType = AttributeData.ConstructorArguments[0].Value as INamedTypeSymbol;
-            
+
             Members = GetMembers(context, symbol);
         }
 
         public void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
         {
-            //Debugger.Launch();
             if (!_languageIsSupported)
                 return;
 

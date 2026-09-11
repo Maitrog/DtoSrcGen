@@ -101,6 +101,43 @@ public class PickGeneratorTests : DtoGeneratorTestsBase
     }
 
     [Fact]
+    public void Pick_MultipleAttributesOnSameClass_GeneratesOneFilePerAttribute()
+    {
+        var (result, _, errors) = RunAndCompile("""
+            using Test.Entities;
+
+            namespace Test
+            {
+                [DtoSrcGen.Pick(typeof(User), "Id as UserId")]
+                [DtoSrcGen.Pick(typeof(Chat), "Id as ChatId", "Created", GenerateDefaultCtor = false)]
+                public partial class MultiDto { }
+            }
+            """);
+
+        var pickFiles = result.Results
+                              .SelectMany(r => r.GeneratedSources)
+                              .Where(s => s.HintName.Contains("PickAttribute"))
+                              .OrderBy(s => s.HintName)
+                              .ToList();
+
+        Assert.Equal(2, pickFiles.Count);
+        Assert.EndsWith(".PickAttribute.1.Fields.g.cs", pickFiles[0].HintName);
+        Assert.EndsWith(".PickAttribute.2.Fields.g.cs", pickFiles[1].HintName);
+
+        var first = pickFiles[0].SourceText.ToString();
+        var second = pickFiles[1].SourceText.ToString();
+
+        Assert.Contains("public int UserId { get; set; }", first);
+        Assert.Contains("public MultiDto(Test.Entities.User value)", first);
+        Assert.Contains("public int ChatId { get; set; }", second);
+        Assert.Contains("public string Created { get; set; }", second);
+        Assert.Contains("public MultiDto(Test.Entities.Chat value)", second);
+
+        Assert.False(HasDiagnostic(result, "DSG3000"));
+        Assert.True(errors.Length == 0, string.Join(Environment.NewLine, errors));
+    }
+
+    [Fact]
     public void Pick_NestedEntity_UsesFullyQualifiedTypeInCtor()
     {
         var (_, generated) = Run("""

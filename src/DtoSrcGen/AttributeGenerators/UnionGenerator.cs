@@ -13,11 +13,9 @@ namespace DtoSrcGen
         private readonly Dictionary<string, int> _types = new();
         private readonly Dictionary<string, PropertyInfo> _properties = new();
 
-        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
+        public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol, AttributeData attributeData)
         {
-            var attributes = symbol.GetAttributes();
-
-            AttributeData = attributes.FirstOrDefault(x => x.AttributeClass?.Name == AttributeName);
+            AttributeData = attributeData;
 
             var types = AttributeData.ConstructorArguments[0].Values.Select(x => x.Value as INamedTypeSymbol).ToList();
 

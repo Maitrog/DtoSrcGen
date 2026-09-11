@@ -12,7 +12,7 @@ namespace DtoSrcGen
 
         bool GetGenerateDefaultCtor();
         
-        void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol);
+        void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol, AttributeData attributeData);
 
         void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent);
 

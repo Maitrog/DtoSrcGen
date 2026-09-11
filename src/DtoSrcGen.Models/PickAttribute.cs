@@ -2,7 +2,7 @@
 
 namespace DtoSrcGen
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class PickAttribute : Attribute
     {
         public PickAttribute(Type sourceType, params string[] properties)
