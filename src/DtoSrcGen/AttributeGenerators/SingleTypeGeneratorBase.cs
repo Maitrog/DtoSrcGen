@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -18,6 +19,7 @@ namespace DtoSrcGen
 
         public void Pre(SourceProductionContext context, LanguageVersion currentLanguageVersion, INamedTypeSymbol symbol)
         {
+            //Debugger.Launch();
             if (currentLanguageVersion <  MinLanguageVersion)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
@@ -44,6 +46,7 @@ namespace DtoSrcGen
 
         public void AppendConstructors(SourceProductionContext context, StringBuilder sb, INamedTypeSymbol symbol, int indent)
         {
+            //Debugger.Launch();
             if (!_languageIsSupported)
                 return;
 
@@ -51,7 +54,9 @@ namespace DtoSrcGen
             ctorSb.Append($"{GeneratorUtils.Indent(indent)}public {symbol.Name}");
 
             var ns = TargetType.ContainingNamespace;
-            var nsName = ns.IsGlobalNamespace ? "" : $"{ns.ToDisplayString()}.";
+            var nsName = TargetType.ContainingType == null
+                ? ns.IsGlobalNamespace ? "" : $"{ns.ToDisplayString()}."
+                : $"{TargetType.ContainingType.ToDisplayString()}.";
             ctorSb.AppendLine($"({nsName}{TargetType.Name} value)");
             ctorSb.AppendLine($"{GeneratorUtils.Indent(indent)}{{");
             indent++;

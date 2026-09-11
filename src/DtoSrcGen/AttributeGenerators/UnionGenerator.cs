@@ -25,7 +25,9 @@ namespace DtoSrcGen
             foreach (var type in types)
             {
                 var ns = type.ContainingNamespace;
-                var nsName = ns.IsGlobalNamespace ? "" : $"{ns.ToDisplayString()}.";
+                var nsName = type.ContainingType == null
+                    ? ns.IsGlobalNamespace ? "" : $"{ns.ToDisplayString()}."
+                    : $"{type.ContainingType.ToDisplayString()}.";
                 var typeName = $"{nsName}{type.Name}";
                 if (_types.ContainsKey(typeName))
                     continue;
