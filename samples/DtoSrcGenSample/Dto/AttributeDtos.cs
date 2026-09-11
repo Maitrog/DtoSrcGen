@@ -3,7 +3,7 @@ using DtoSrcGenSample.Entities;
 
 namespace DtoSrcGenSample.Dto;
 
-[Pick(typeof(User), "Id as UserId", nameof(User.Name), nameof(User.Email))]
+[Pick(typeof(User), $"{nameof(User.Id)} as UserId", nameof(User.Name), nameof(User.Email))]
 public partial class UserPickDto
 {
 }
@@ -28,7 +28,7 @@ public partial class RequiredUserDto
 {
 }
 
-[Union(typeof(Chat), typeof(Flags))]
+[Union(typeof(Chat), typeof(User.FlagCollection))]
 public partial class ChatWithFlagsDto
 {
 }
@@ -37,4 +37,18 @@ public partial class ChatWithFlagsDto
 [Omit(typeof(Chat), nameof(Chat.Created), nameof(Chat.Updated), GenerateDefaultCtor = false)]
 public partial class UserChatDto
 {
+}
+
+[Pick(typeof(User.FlagCollection), nameof(User.FlagCollection.IsBot))]
+public partial class FlagsPickDto
+{
+}
+
+[Omit(typeof(User))]
+public partial class UserDto
+{
+    [Omit(typeof(User))]
+    public partial class NestedUserDto
+    {
+    }
 }

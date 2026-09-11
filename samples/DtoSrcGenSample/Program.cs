@@ -7,7 +7,7 @@ var user = new User
     Name = "Alex",
     Age = 28,
     Email = "alex@example.com",
-    Flags = new Flags
+    Flags = new User.FlagCollection
     {
         Deleted = false,
         IsBot = true
@@ -23,7 +23,7 @@ var chat = new Chat
     Updated = DateTime.UtcNow,
 };
 
-var flags = new Flags
+var flags = new User.FlagCollection
 {
     Deleted = false,
     IsBot = true,
@@ -63,7 +63,7 @@ var union = new ChatWithFlagsDto(chat, flags);
 var userChat = new UserChatDto(chat)
 {
     // Flags property from User
-    Flags = new Flags
+    Flags = new User.FlagCollection
     {
         Deleted = user.Flags.Deleted,
         IsBot = user.Flags.IsBot,
@@ -78,7 +78,7 @@ var userChat2 = new UserChatDto(user)
     Description = chat.Description
 };
 
-// Console.WriteLine($"Pick DTO: {picked.Id} | {picked.Name} | {picked.Email}");
+Console.WriteLine($"Pick DTO: {picked.UserId} | {picked.Name} | {picked.Email}");
 Console.WriteLine($"Pick (NoDefaultCtor): {pickedNoDefaultCtor.Id} | {pickedNoDefaultCtor.Name}");
 Console.WriteLine($"Omit DTO: {withoutFlags.Id} | {withoutFlags.Name} | {withoutFlags.Email} | Age={withoutFlags.Age}");
 Console.WriteLine($"Readonly DTO: {readonlyChat.Name} ({readonlyChat.Created:u})");
