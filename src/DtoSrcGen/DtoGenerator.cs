@@ -20,6 +20,7 @@ namespace DtoSrcGen
             new UnionGenerator(),
             new RequiredGenerator(),
             new PartialGenerator(),
+            new RecordGenerator(),
         };
         
         private LanguageVersion _languageVersion;

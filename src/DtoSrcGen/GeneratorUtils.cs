@@ -1,4 +1,4 @@
-using System.Linq;
+using System;
 using Microsoft.CodeAnalysis;
 
 namespace DtoSrcGen
@@ -74,6 +74,8 @@ namespace DtoSrcGen
                              {
                                  SymbolKind.Property => (member as IPropertySymbol)?.Type.ToDisplayString(),
                                  SymbolKind.Field => (member as IFieldSymbol)?.Type.ToDisplayString(),
+                                 SymbolKind.NamedType => (member as INamedTypeSymbol)?.ToDisplayString(),
+                                 _ => throw new ArgumentOutOfRangeException()
                              };
             return memberType;
         }
