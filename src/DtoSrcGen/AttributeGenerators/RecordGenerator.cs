@@ -23,9 +23,7 @@ namespace DtoSrcGen
             if (TargetEnum?.TypeKind != TypeKind.Enum)
             {
                 var location = symbol.Locations.First();
-                if (attributeData.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax attributeSyntax
-                    && attributeSyntax.ArgumentList is { } argumentList
-                    && argumentList.Arguments.Count > 0)
+                if (attributeData.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax { ArgumentList: { Arguments: { Count: > 0 } } argumentList })
                     location = argumentList.Arguments[0].GetLocation();
 
                 context.ReportDiagnostic(Diagnostic.Create(

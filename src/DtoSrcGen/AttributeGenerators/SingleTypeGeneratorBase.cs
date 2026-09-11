@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DtoSrcGen
 {
@@ -21,6 +22,10 @@ namespace DtoSrcGen
         {
             if (currentLanguageVersion <  MinLanguageVersion)
             {
+                var location = symbol.Locations.First();
+                if (attributeData.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax attributeSyntax)
+                    location = attributeSyntax.GetLocation();
+                
                 context.ReportDiagnostic(Diagnostic.Create(
                     new DiagnosticDescriptor(
                         "DSG3002",
@@ -29,7 +34,7 @@ namespace DtoSrcGen
                         "DtoSrcGen",
                         DiagnosticSeverity.Error,
                         isEnabledByDefault: true),
-                    symbol.Locations.First()));
+                    location));
                 _languageIsSupported = false;
                 return;
             }
