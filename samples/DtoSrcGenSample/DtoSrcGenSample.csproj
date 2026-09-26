@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\DtoSrcGen.Models\DtoSrcGen.Models.csproj" />
+      <ProjectReference Include="..\..\src\DtoSrcGen.Attributes\DtoSrcGen.Attributes.csproj" />
       <ProjectReference Include="..\..\src\DtoSrcGen\DtoSrcGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
