@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using DtoSrcGen;
 
 namespace DtoSrcGen.Tests;
 
