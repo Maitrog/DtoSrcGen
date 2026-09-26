@@ -5,7 +5,7 @@ This project is inspired by Utility Types from Typescript.
 Source generator that builds DTO partial classes from existing models using attributes.
 
 ## What it does
-- Generates constructors and properties for partial classes annotated with attributes from `DtoSrcGen.Models`.
+- Generates constructors and properties for partial classes annotated with attributes from `DtoSrcGen.Attributes`.
 - Supports `Pick`, `Omit`, `Readonly`, `Required`, `Partial`, `Record`, and `Union` patterns to shape DTOs without hand-written boilerplate.
 - Supports stacking multiple attributes on a single DTO, including several attributes of the same type (e.g., two `[Pick]` attributes).
 - Supports nested DTO classes (a partial DTO declared inside another class).
