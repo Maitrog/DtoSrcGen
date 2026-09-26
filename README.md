@@ -37,14 +37,28 @@ Both packages are also published to GitHub Packages (see the **Packages** sectio
 ```
 
 ## Getting started
-1) Add references to your project file:
+1) Add the packages to your project file:
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Maitrog.DtoSrcGen.Attributes" Version="1.0.1" />
+  <PackageReference Include="Maitrog.DtoSrcGen" Version="1.0.1"
+                    OutputItemType="Analyzer"
+                    ReferenceOutputAssembly="false" />
+</ItemGroup>
 ```
-  <ItemGroup>
-    <ProjectReference Include="..\src\DtoSrcGen.Attributes\DtoSrcGen.Attributes.csproj" />
-    <ProjectReference Include="..\src\DtoSrcGen\DtoSrcGen.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />
-  </ItemGroup>
+
+> The generator must be wired as an analyzer (`OutputItemType="Analyzer"`, `ReferenceOutputAssembly="false"`) — a plain package reference will not generate anything.
+
+When developing inside this repository, use project references instead:
+
+```xml
+<ItemGroup>
+  <ProjectReference Include="..\src\DtoSrcGen.Attributes\DtoSrcGen.Attributes.csproj" />
+  <ProjectReference Include="..\src\DtoSrcGen\DtoSrcGen.csproj"
+                    OutputItemType="Analyzer"
+                    ReferenceOutputAssembly="false" />
+</ItemGroup>
 ```
 
 2) Annotate partial DTOs:
