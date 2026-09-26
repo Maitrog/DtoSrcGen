@@ -1,8 +1,11 @@
 # DtoSrcGen
 
+[![NuGet](https://img.shields.io/nuget/v/Maitrog.DtoSrcGen.svg)](https://www.nuget.org/packages/Maitrog.DtoSrcGen/)
+[![GitHub Packages](https://img.shields.io/badge/packages-Maitrog.DtoSrcGen-blue)](https://github.com/Maitrog?tab=packages)
+
 This project is inspired by Utility Types from Typescript.
 
-Source generator that builds DTO partial classes from existing models using attributes.
+Source generator that builds DTO partial classes from [publish-nuget.yml](.github/workflows/publish-nuget.yml)existing models using attributes.
 
 ## What it does
 - Generates constructors and properties for partial classes annotated with attributes from `DtoSrcGen.Attributes`.
@@ -11,6 +14,27 @@ Source generator that builds DTO partial classes from existing models using attr
 - Supports nested DTO classes (a partial DTO declared inside another class).
 - Supports `GenerateDefaultCtor` option on all attributes to control whether an empty DTO constructor is generated.
 - Emits diagnostics when members are missing/duplicated and when language features (e.g., `required`) are unavailable.
+
+## NuGet packages
+- `Maitrog.DtoSrcGen` — the source generator. Install from [nuget.org](https://www.nuget.org/packages/Maitrog.DtoSrcGen/) with `dotnet add package Maitrog.DtoSrcGen`.
+- `Maitrog.DtoSrcGen.Attributes` — the attributes. Install from [nuget.org](https://www.nuget.org/packages/Maitrog.DtoSrcGen.Attributes/) with `dotnet add package Maitrog.DtoSrcGen.Attributes`.
+
+Both packages are also published to GitHub Packages (see the **Packages** section on this page). Restoring from GitHub Packages requires authentication — add a `nuget.config` next to your project with a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (with `read:packages` scope):
+
+```xml
+<configuration>
+  <packageSources>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+    <add key="github" value="https://nuget.pkg.github.com/Maitrog/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <github>
+      <add key="Username" value="YOUR_GITHUB_USERNAME" />
+      <add key="ClearTextPassword" value="YOUR_PAT" />
+    </github>
+  </packageSourceCredentials>
+</configuration>
+```
 
 ## Getting started
 1) Add references to your project file:

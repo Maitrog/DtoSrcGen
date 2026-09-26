@@ -3,12 +3,21 @@ name: Publish NuGet
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version, e.g. 1.0.0'
+        required: true
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      # release run: tag name (v1.0.0); manual run: version input
+      PKG_VERSION: ${{ inputs.version || github.event.release.tag_name }}
     permissions:
-      id-token: write
+      id-token: write # OIDC token for NuGet Trusted Publishing
+      packages: write # GitHub Packages
       contents: read
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +31,8 @@ jobs:
 
       - name: Pack
         run: |
-          dotnet pack src/DtoSrcGen/DtoSrcGen.csproj -c Release -p:Version=${GITHUB_REF_NAME#v}
-          dotnet pack src/DtoSrcGen.Attributes/DtoSrcGen.Attributes.csproj -c Release -p:Version=${GITHUB_REF_NAME#v}
+          dotnet pack src/DtoSrcGen/DtoSrcGen.csproj -c Release -p:Version=${PKG_VERSION#v}
+          dotnet pack src/DtoSrcGen.Attributes/DtoSrcGen.Attributes.csproj -c Release -p:Version=${PKG_VERSION#v}
 
       # exchanges the OIDC token for a short-lived API key
       - name: NuGet login (Trusted Publishing)
@@ -37,4 +46,11 @@ jobs:
           dotnet nuget push "src/*/bin/Release/*.nupkg"
           --source https://api.nuget.org/v3/index.json
           --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --skip-duplicate
+
+      - name: Push to GitHub Packages
+        run: >
+          dotnet nuget push "src/*/bin/Release/*.nupkg"
+          --source https://nuget.pkg.github.com/Maitrog/index.json
+          --api-key ${{ secrets.GITHUB_TOKEN }}
           --skip-duplicate
