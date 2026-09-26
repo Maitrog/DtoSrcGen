@@ -5,7 +5,7 @@
 
 This project is inspired by Utility Types from Typescript.
 
-Source generator that builds DTO partial classes from [publish-nuget.yml](.github/workflows/publish-nuget.yml)existing models using attributes.
+Source generator that builds DTO partial classes from existing models using attributes.
 
 ## What it does
 - Generates constructors and properties for partial classes annotated with attributes from `DtoSrcGen.Attributes`.
