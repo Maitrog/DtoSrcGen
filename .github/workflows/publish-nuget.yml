@@ -7,6 +7,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -22,9 +25,16 @@ jobs:
           dotnet pack src/DtoSrcGen/DtoSrcGen.csproj -c Release -p:Version=${GITHUB_REF_NAME#v}
           dotnet pack src/DtoSrcGen.Attributes/DtoSrcGen.Attributes.csproj -c Release -p:Version=${GITHUB_REF_NAME#v}
 
+      # exchanges the OIDC token for a short-lived API key
+      - name: NuGet login (Trusted Publishing)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: Maitrog
+
       - name: Push
         run: >
           dotnet nuget push "src/*/bin/Release/*.nupkg"
           --source https://api.nuget.org/v3/index.json
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
           --skip-duplicate
