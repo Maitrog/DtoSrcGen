@@ -5,7 +5,18 @@
         <LangVersion>9</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageId>Maitrog.DtoSrcGen</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Maitrog</Authors>
+        <Description>Roslyn source generator that creates DTO partial classes from existing models using TypeScript-style utility type attributes (Pick, Omit, Partial, Readonly, Required, Record, Union). Requires Maitrog.DtoSrcGen.Attributes.</Description>
+        <PackageTags>dto;source-generator;roslyn;codegen;utility-types;typescript</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/Maitrog/DtoSrcGen</RepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)..\..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0">
