@@ -16,7 +16,7 @@ Source generator that builds DTO partial classes from existing models using attr
 1) Add references to your project file:
 ```
   <ItemGroup>
-    <ProjectReference Include="..\src\DtoSrcGen.Models\DtoSrcGen.Models.csproj" />
+    <ProjectReference Include="..\src\DtoSrcGen.Attributes\DtoSrcGen.Attributes.csproj" />
     <ProjectReference Include="..\src\DtoSrcGen\DtoSrcGen.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
